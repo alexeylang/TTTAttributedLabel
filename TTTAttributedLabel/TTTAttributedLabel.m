@@ -568,7 +568,30 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
     if (attributes) {
         NSMutableAttributedString *mutableAttributedString = [self.attributedText mutableCopy];
         for (NSTextCheckingResult *result in results) {
-            [mutableAttributedString addAttributes:attributes range:result.range];
+            NSMutableDictionary *newAttributes = [attributes mutableCopy];
+
+            // We should preserve existing line height metrics if new one are not defined in link attributes
+            if ([NSMutableParagraphStyle class]) {
+                NSParagraphStyle *existingParagraphStyle = [mutableAttributedString attribute:(NSString *)kCTParagraphStyleAttributeName
+                                                                                      atIndex:result.range.location
+                                                                               effectiveRange:NULL];
+                NSMutableParagraphStyle *newParagraphStyle = [[newAttributes objectForKey:(NSString *)kCTParagraphStyleAttributeName] mutableCopy];
+                if ( !newParagraphStyle.minimumLineHeight ) {
+                    newParagraphStyle.minimumLineHeight = existingParagraphStyle.minimumLineHeight;
+                }
+                if ( !newParagraphStyle.maximumLineHeight ) {
+                    newParagraphStyle.maximumLineHeight = existingParagraphStyle.maximumLineHeight;
+                }
+                if ( !newParagraphStyle.lineHeightMultiple ) {
+                    newParagraphStyle.lineHeightMultiple = existingParagraphStyle.lineHeightMultiple;
+                }
+
+                [newAttributes setObject:newParagraphStyle forKey:(NSString *)kCTParagraphStyleAttributeName];
+            } else {
+                // Sorry, we do not care about iOS 5 users. :(
+            }
+
+            [mutableAttributedString addAttributes:newAttributes range:result.range];
         }
 
         self.attributedText = mutableAttributedString;
