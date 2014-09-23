@@ -576,17 +576,20 @@ static inline CGSize CTFramesetterSuggestFrameSizeForAttributedStringWithConstra
                                                                                       atIndex:result.range.location
                                                                                effectiveRange:NULL];
                 NSMutableParagraphStyle *newParagraphStyle = [[newAttributes objectForKey:(NSString *)kCTParagraphStyleAttributeName] mutableCopy];
-                if ( !newParagraphStyle.minimumLineHeight ) {
-                    newParagraphStyle.minimumLineHeight = existingParagraphStyle.minimumLineHeight;
-                }
-                if ( !newParagraphStyle.maximumLineHeight ) {
-                    newParagraphStyle.maximumLineHeight = existingParagraphStyle.maximumLineHeight;
-                }
-                if ( !newParagraphStyle.lineHeightMultiple ) {
-                    newParagraphStyle.lineHeightMultiple = existingParagraphStyle.lineHeightMultiple;
-                }
+                if ( newParagraphStyle )
+                {
+                    if ( !newParagraphStyle.minimumLineHeight ) {
+                        newParagraphStyle.minimumLineHeight = existingParagraphStyle.minimumLineHeight;
+                    }
+                    if ( !newParagraphStyle.maximumLineHeight ) {
+                        newParagraphStyle.maximumLineHeight = existingParagraphStyle.maximumLineHeight;
+                    }
+                    if ( !newParagraphStyle.lineHeightMultiple ) {
+                        newParagraphStyle.lineHeightMultiple = existingParagraphStyle.lineHeightMultiple;
+                    }
 
-                [newAttributes setObject:newParagraphStyle forKey:(NSString *)kCTParagraphStyleAttributeName];
+                    [newAttributes setObject:newParagraphStyle forKey:(NSString *)kCTParagraphStyleAttributeName];
+                }
             } else {
                 // Sorry, we do not care about iOS 5 users. :(
             }
